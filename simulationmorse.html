@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulateur Morse</title>
+
+<style>
+body{
+    background:#1e1e1e;
+    color:white;
+    font-family:Arial,sans-serif;
+    text-align:center;
+    padding:20px;
+}
+
+h1{
+    color:#00ff88;
+}
+
+textarea{
+    width:90%;
+    max-width:800px;
+    height:120px;
+    font-size:20px;
+    padding:10px;
+    border-radius:10px;
+}
+
+button{
+    margin-top:15px;
+    padding:12px 25px;
+    font-size:18px;
+    cursor:pointer;
+}
+
+#morse{
+    margin-top:25px;
+    font-size:24px;
+    word-break:break-word;
+}
+
+#led{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    background:#300;
+    margin:30px auto;
+    transition:0.1s;
+    box-shadow:0 0 15px black;
+}
+
+.on{
+    background:red !important;
+    box-shadow:0 0 50px red !important;
+}
+
+.info{
+    margin-top:20px;
+    color:#aaa;
+}
+</style>
+</head>
+<body>
+
+<h1>📡 Simulateur Morse</h1>
+
+<p>Tape un texte :</p>
+
+<textarea id="texte" placeholder="Exemple : Bonjour tout le monde"></textarea>
+
+<br>
+
+<button onclick="envoyer()">▶ Envoyer</button>
+
+<h2>Code Morse</h2>
+
+<div id="morse"></div>
+
+<div id="led"></div>
+
+<div class="info">
+    / = séparation entre lettres<br>
+    // = séparation entre mots
+</div>
+
+<script>
+
+const morse = {
+A:".-", B:"-...", C:"-.-.", D:"-..", E:".",
+F:"..-.", G:"--.", H:"....", I:"..", J:".---",
+K:"-.-", L:".-..", M:"--", N:"-.", O:"---",
+P:".--.", Q:"--.-", R:".-.", S:"...", T:"-",
+U:"..-", V:"...-", W:".--", X:"-..-", Y:"-.--",
+Z:"--..",
+0:"-----", 1:".----", 2:"..---", 3:"...--",
+4:"....-", 5:".....", 6:"-....", 7:"--...",
+8:"---..", 9:"----."
+};
+
+function sleep(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function envoyer(){
+
+    let texte = document.getElementById("texte").value.toUpperCase();
+
+    let sortie = "";
+
+    for(let c of texte){
+
+        if(c === " "){
+            sortie += "//";
+        }
+
+        else if(morse[c]){
+
+            if(sortie.length > 0 && !sortie.endsWith("//")){
+                sortie += "/";
+            }
+
+            sortie += morse[c];
+        }
+    }
+
+    document.getElementById("morse").textContent = sortie;
+
+    const led = document.getElementById("led");
+
+    for(let i=0;i<sortie.length;i++){
+
+        let symbole = sortie[i];
+
+        if(symbole === "."){
+
+            led.classList.add("on");
+            await sleep(200);
+            led.classList.remove("on");
+            await sleep(200);
+
+        }
+
+        else if(symbole === "-"){
+
+            led.classList.add("on");
+            await sleep(600);
+            led.classList.remove("on");
+            await sleep(200);
+
+        }
+
+        else if(symbole === "/"){
+
+            if(sortie[i+1] === "/"){
+                await sleep(1400);
+                i++;
+            }
+            else{
+                await sleep(600);
+            }
+        }
+    }
+}
+
+</script>
+
+</body>
+</html>
