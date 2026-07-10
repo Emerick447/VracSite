@@ -1,0 +1,16 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{font-family:Arial;background:#eef;margin:0} .page{display:none;max-width:700px;margin:auto;padding:16px}.show{display:block}.card{background:#fff;padding:16px;border-radius:10px}input,button{width:100%;padding:10px;margin:6px 0;box-sizing:border-box}table{width:100%;border-collapse:collapse}td,th{border:1px solid #ccc;padding:6px;text-align:center}th{background:#1976d2;color:#fff}</style></head><body>
+<div id=p1 class="page show"><div class=card><h2>Nombre de joueurs</h2><input id=n type=number min=2 max=10 value=4><button onclick="go2()">Suivant</button></div></div>
+<div id=p2 class="page"><div class=card><h2>Noms</h2><div id=names></div><button onclick="start()">Commencer</button></div></div>
+<div id=p3 class="page"><div class=card><h2>Manche</h2><div id=inp></div><button onclick="round()">Valider</button><button onclick="finish()">Fin</button><table id=t></table></div></div>
+<div id=p4 class="page"><div class=card id=final></div></div>
+<script>
+let pl=[],hist=[];function show(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('show'));document.getElementById(id).classList.add('show')}
+function go2(){names.innerHTML='';for(let i=0;i<n.value;i++)names.innerHTML+=`<input id=a${i} value="Joueur ${i+1}">`;show('p2')}
+function start(){pl=[];hist=[];for(let i=0;i<n.value;i++)pl.push({name:a(i).value,total:0});renderInputs();render();show('p3')}
+function a(i){return document.getElementById('a'+i)}
+function renderInputs(){inp.innerHTML='';for(let i=0;i<pl.length-1;i++)inp.innerHTML+=pl[i].name+`<input id=s${i} type=number value=0>`;inp.innerHTML+='<p>'+pl.at(-1).name+' : automatique</p>'}
+function round(){let r=[],sum=0;for(let i=0;i<pl.length-1;i++){let v=+document.getElementById('s'+i).value||0;r.push(v);sum+=v}let d=250-sum;if(d<0)return alert('Total >250');r.push(d);hist.push(r);pl.forEach((p,i)=>p.total+=r[i]);render();renderInputs()}
+function render(){let h='<tr><th>Joueur</th>';for(let i=0;i<hist.length;i++)h+='<th>M'+(i+1)+'</th>';h+='<th>Total</th></tr>';pl.forEach((p,i)=>{h+='<tr><td>'+p.name+'</td>';hist.forEach(r=>h+='<td>'+r[i]+'</td>');h+='<td>'+p.total+'</td></tr>'});t.innerHTML=h}
+function finish(){let c=[...pl].sort((a,b)=>a.total-b.total),m=['🥇','🥈','🥉'];let h='<h2>Classement</h2><table><tr><th>Place</th><th>Nom</th><th>Points</th></tr>';c.forEach((p,i)=>h+=`<tr><td>${m[i]||i+1}</td><td>${p.name}</td><td>${p.total}</td></tr>`);h+='</table>';final.innerHTML=h;show('p4')}
+</script></body></html>
