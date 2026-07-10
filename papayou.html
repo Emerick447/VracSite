@@ -1,0 +1,30 @@
+
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Papayou</title>
+<style>
+body{font-family:Arial;margin:0;background:#eef;padding:12px}h1{text-align:center}
+.card{background:#fff;padding:12px;border-radius:10px;margin:10px auto;max-width:700px}
+input,button{padding:10px;margin:4px;width:100%;box-sizing:border-box}
+table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:6px;text-align:center}
+th{background:#1976d2;color:#fff}
+</style></head><body>
+<div class="card"><h1>🎴 Papayou</h1>
+<label>Nombre de joueurs</label><input id=n type=number min=2 max=10 value=4>
+<button onclick="setup()">Créer les joueurs</button><div id=cfg></div></div>
+<div class="card" id=game style="display:none"><h2>Nouvelle manche</h2><div id=inputs></div>
+<button onclick="round()">Valider la manche</button>
+<button onclick="undo()">Annuler dernière manche</button>
+<button onclick="finish()">Fin de partie</button></div>
+<div class="card" id=score style="display:none"><table id=t></table></div>
+<div class="card" id=final style="display:none"></div>
+<script>
+let players=[],hist=[];
+function setup(){let c=cfg;c.innerHTML="";for(let i=0;i<n.value;i++)c.innerHTML+=`<input id=name${i} value="Joueur ${i+1}">`;c.innerHTML+='<button onclick="start()">Commencer</button>';}
+function start(){players=[];hist=[];for(let i=0;i<n.value;i++)players.push({name:document.getElementById('name'+i).value,total:0});game.style.display=score.style.display='block';renderInputs();render();}
+function renderInputs(){inputs.innerHTML="";for(let i=0;i<players.length-1;i++)inputs.innerHTML+=players[i].name+`<input type=number id=p${i} value=0>`;inputs.innerHTML+="<p><b>"+players.at(-1).name+"</b> calculé automatiquement.</p>";}
+function round(){let r=[],s=0;for(let i=0;i<players.length-1;i++){let v=+document.getElementById('p'+i).value||0;r.push(v);s+=v;}let last=250-s;if(last<0){alert("Total >250");return;}r.push(last);hist.push(r);players.forEach((p,i)=>p.total+=r[i]);render();renderInputs();}
+function undo(){if(!hist.length)return;let r=hist.pop();players.forEach((p,i)=>p.total-=r[i]);render();}
+function render(){let h="<tr><th>Joueur</th>";for(let i=0;i<hist.length;i++)h+="<th>M"+(i+1)+"</th>";h+="<th>Total</th></tr>";players.forEach((p,i)=>{h+="<tr><td>"+p.name+"</td>";hist.forEach(r=>h+="<td>"+r[i]+"</td>");h+="<td><b>"+p.total+"</b></td></tr>";});t.innerHTML=h;}
+function finish(){let c=[...players].sort((a,b)=>a.total-b.total);let m=["🥇","🥈","🥉"];let h="<h2>Classement</h2><table><tr><th>Place</th><th>Joueur</th><th>Points</th></tr>";c.forEach((p,i)=>h+=`<tr><td>${m[i]||i+1}</td><td>${p.name}</td><td>${p.total}</td></tr>`);h+="</table>";final.style.display="block";final.innerHTML=h;}
+</script></body></html>
