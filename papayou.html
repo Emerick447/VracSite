@@ -1,75 +1,85 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Papayou</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Papayou - Choix de la version</title>
 
 <style>
 body{
-    margin:0;
-    font-family:Arial,sans-serif;
-    background:linear-gradient(135deg,#4facfe,#00c6ff);
+    font-family:Arial;
+    background:#0f172a;
+    color:white;
     display:flex;
     justify-content:center;
     align-items:center;
     height:100vh;
+    margin:0;
 }
 
 .card{
-    background:white;
+    background:#1e293b;
     padding:30px;
     border-radius:20px;
-    box-shadow:0 10px 30px rgba(0,0,0,.2);
+    width:320px;
     text-align:center;
-    width:90%;
-    max-width:400px;
 }
 
-h1{
-    margin-top:0;
+input,button{
+    width:100%;
+    padding:12px;
+    margin-top:12px;
+    border-radius:10px;
+    border:none;
+    box-sizing:border-box;
 }
 
-a{
-    display:block;
-    text-decoration:none;
-    background:#1976d2;
+button{
+    background:#2563eb;
     color:white;
-    padding:18px;
-    margin:15px 0;
-    border-radius:12px;
-    font-size:20px;
-    transition:.2s;
-}
-
-a:hover{
-    transform:scale(1.03);
-    background:#1565c0;
-}
-
-p{
-    color:#666;
+    font-weight:bold;
+    cursor:pointer;
 }
 </style>
 
 </head>
+
 <body>
 
 <div class="card">
 
-<h1>🎴 Papayou</h1>
+<h2>🎴 Papayou</h2>
 
-<p>Choisissez une version :</p>
+<p>Version :</p>
 
-<a href="https://emerick447.github.io/VracSite/papayou/papayou_v1.html">
- Version 1
-</a>
+<input
+    id="version"
+    type="number"
+    min="1"
+    placeholder="Ex : 3">
 
-<a href="https://emerick447.github.io/VracSite/papayou/papayou_v2.html">
- Version 2
-</a>
+<button onclick="ouvrir()">
+Ouvrir
+</button>
 
 </div>
+
+<script>
+
+function ouvrir(){
+
+    let v=document.getElementById("version").value.trim();
+
+    if(v===""){
+        alert("Choisissez une version.");
+        return;
+    }
+
+    window.location.href="papayou/papayou_v"+v+".html";
+
+}
+
+</script>
 
 </body>
 </html>
