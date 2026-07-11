@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Papayou V3</title>
+
+<style>
+body{
+    font-family:Arial;
+    background:#0f172a;
+    color:#fff;
+    margin:0;
+}
+.wrap{
+    max-width:850px;
+    margin:auto;
+    padding:16px;
+}
+.card{
+    background:#1e293b;
+    border-radius:16px;
+    padding:16px;
+    margin:12px 0;
+}
+input,button{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:0;
+    margin:6px 0;
+    box-sizing:border-box;
+}
+button{
+    background:#3b82f6;
+    color:#fff;
+    font-weight:bold;
+}
+table{
+    width:100%;
+    border-collapse:collapse;
+    display:block;
+    overflow:auto;
+}
+th,td{
+    border:1px solid #475569;
+    padding:6px;
+    text-align:center;
+}
+th{
+    background:#2563eb;
+}
+.badge{
+    padding:4px 8px;
+    border-radius:999px;
+    background:#334155;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+<div id="s1" class="card">
+<h2>🎴 Papayou V3</h2>
+
+<input id="n" type="number" min="2" max="10" value="4">
+
+<button onclick="cfg()">Suivant</button>
+</div>
+
+<div id="s2" class="card" style="display:none">
+<h2>Joueurs</h2>
+
+<div id="names"></div>
+
+<button onclick="start()">Commencer</button>
+</div>
+
+<div id="s3" class="card" style="display:none">
+
+<h2>
+Partie
+<span class="badge" id="lead"></span>
+</h2>
+
+<div id="inputs"></div>
+
+<button onclick="add()">Valider la manche</button>
+
+<button onclick="undo()">Annuler</button>
+
+<table id="tab"></table>
+
+</div>
+
+</div>
+
+<script>
+
+let P=[];
+let H=[];
+
+const save=()=>{
+    localStorage.p3=JSON.stringify({P,H});
+};
+
+function cfg(){
+
+    s2.style.display='block';
+    s1.style.display='none';
+
+    names.innerHTML='';
+
+    for(let i=0;i<n.value;i++){
+
+        names.innerHTML+=`
+        <input id="j${i}" value="Joueur ${i+1}">
+        `;
+
+    }
+
+}
+
+function start(){
+
+    P=[];
+    H=[];
+
+    for(let i=0;i<n.value;i++){
+
+        P.push({
+            name:document.getElementById('j'+i).value,
+            total:0
+        });
+
+    }
+
+    renderInputs();
+
+    draw();
+
+    s2.style.display='none';
+    s3.style.display='block';
+
+    save();
+
+}
+
+function renderInputs(){
+
+    inputs.innerHTML='';
+
+    for(let i=0;i<P.length-1;i++){
+
+        inputs.innerHTML+=`
+            ${P[i].name}
+            <input id="p${i}" type="number" value="0">
+        `;
+
+    }
+
+    inputs.innerHTML+=`
+        ${P.at(-1).name}
+        <input id="auto" type="number" value="" disabled>
+    `;
+
+}
+
+function add(){
+
+    let r=[];
+    let sum=0;
+
+    for(let i=0;i<P.length-1;i++){
+
+        let v=+document.getElementById('p'+i).value||0;
+
+        r.push(v);
+
+        sum+=v;
+
+    }
+
+    let d=250-sum;
+
+    if(d<0){
+
+        alert("Total >250");
+
+        return;
+
+    }
+
+    r.push(d);
+
+    H.push(r);
+
+    P.forEach((x,i)=>x.total+=r[i]);
+
+    draw();
+
+    renderInputs();
+
+    const auto=document.getElementById("auto");
+
+    if(auto){
+
+        auto.value=d;
+
+    }
+
+    save();
+
+}
+
+function undo(){
+
+    if(!H.length) return;
+
+    let r=H.pop();
+
+    P.forEach((x,i)=>x.total-=r[i]);
+
+    draw();
+
+    save();
+
+}
+
+function draw(){
+
+    let h='<tr><th>Joueur</th>';
+
+    for(let i=0;i<H.length;i++){
+
+        h+='<th>M'+(i+1)+'</th>';
+
+    }
+
+    h+='<th>Total</th></tr>';
+
+    P.forEach((p,i)=>{
+
+        h+='<tr>';
+
+        h+='<td>'+p.name+'</td>';
+
+        H.forEach(r=>{
+
+            h+='<td>'+r[i]+'</td>';
+
+        });
+
+        h+='<td><b>'+p.total+'</b></td>';
+
+        h+='</tr>';
+
+    });
+
+    tab.innerHTML=h;
+
+    let l=[...P].sort((a,b)=>a.total-b.total)[0];
+
+    lead.textContent='En tête : '+l.name+' ('+l.total+')';
+
+}
+
+</script>
+
+</body>
+</html>
